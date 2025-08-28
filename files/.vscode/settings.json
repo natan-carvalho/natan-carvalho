@@ -1,0 +1,209 @@
+{
+  "editor.fontSize": 13,
+  "editor.fontFamily": "JetBrains Mono",
+  "editor.fontLigatures": true,
+  "editor.lineHeight": 1.8,
+  "editor.renderLineHighlight": "gutter",
+  "editor.tabSize": 2,
+  "editor.wordWrap": "on",
+  "editor.semanticHighlighting.enabled": false,
+  "editor.minimap.enabled": false,
+  // "editor.scrollbar.vertical": "hidden",
+  "editor.scrollbar.horizontal": "hidden",
+  "editor.rulers": [
+    80,
+    120
+  ],
+  "editor.formatOnType": true,
+  "[csharp]": {
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true,
+    "editor.formatOnSave": true
+  },
+  "csharp.format.enable": true,
+  "[go]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "golang.go"
+  },
+  "[python]": {
+    "editor.formatOnType": true,
+    "editor.tabSize": 2
+  },
+  "workbench.startupEditor": "newUntitledFile",
+  "workbench.editor.labelFormat": "short",
+  "workbench.activityBar.location": "top",
+  "workbench.statusBar.visible": false,
+  "explorer.compactFolders": false,
+  "explorer.fileNesting.enabled": true,
+  "explorer.fileNesting.patterns": {
+    // "*.ts": "${capture}.js",
+    // "*.js": "${capture}.js.map, ${capture}.min.js, ${capture}.d.ts",
+    // "*.jsx": "${capture}.js",
+    // "*.tsx": "${capture}.ts",
+    "package.json": ".eslint*, prettier*, tsconfig*, package-lock*, yarn.lock*, pnpm-lock*, bun-lock*, vite*",
+    "tailwind.config*": "tailwind.config*, postcss.config*",
+    ".env.local": ".env*",
+    ".env": ".env*"
+  },
+  "apc.electron": {
+    // "titleBarStyle": "hiddenInset"
+  },
+  "apc.header": {
+    "height": 36
+  },
+  // "apc.font.family": "Inter",
+  "apc.stylesheet": {
+    ".title-label > h2": "display: none",
+    ".title-actions": "display: none",
+    ".pane-body": "padding: 8px",
+    ".pane-header": "0px 8px"
+  },
+  "window.titleBarStyle": "custom",
+  "files.exclude": {
+    "**/node_modules": true,
+    "**/__pycache__": true
+  },
+  "emmet.syntaxProfiles": {
+    "javascript": "jsx"
+  },
+  "javascript.suggest.autoImports": true,
+  "javascript.updateImportsOnFileMove.enabled": "always",
+  "[prisma]": {
+    "editor.formatOnSave": true
+  },
+  "extensions.ignoreRecommendations": true,
+  "typescript.tsserver.log": "off",
+  "files.associations": {
+    ".sequelizerc": "javascript",
+    ".stylelintrc": "json",
+    "*.tsx": "typescriptreact",
+    ".env.*": "dotenv",
+    ".prettierrc": "json",
+    "*.cs": "csharp"
+  },
+  "editor.parameterHints.enabled": false,
+  "typescript.updateImportsOnFileMove.enabled": "never",
+  "terminal.integrated.defaultProfile.windows": "Command Prompt",
+  "terminal.integrated.fontSize": 14,
+  "terminal.integrated.fontFamily": "JetBrainsMono Nerd Font",
+  "diffEditor.wordWrap": "on",
+  "files.autoSave": "onFocusChange",
+  "files.trimFinalNewlines": true,
+  "files.trimTrailingWhitespace": true,
+  "editor.formatOnSave": true,
+  "typescript.suggest.autoImports": true,
+  "emmet.includeLanguages": {
+    "javascript": "javascriptreact"
+  },
+  "editor.renderWhitespace": "none",
+  "editor.renderControlCharacters": false,
+  "terminal.integrated.profiles.windows": {
+    "PowerShell": {
+      "source": "PowerShell",
+      "icon": "terminal-powershell"
+    },
+    "Command Prompt": {
+      "path": [
+        "${env:windir}\\Sysnative\\cmd.exe",
+        "${env:windir}\\System32\\cmd.exe"
+      ],
+      "args": [],
+      "icon": "terminal-cmd"
+    },
+    "Git Bash": {
+      "source": "Git Bash"
+    },
+    "Ubuntu (WSL)": {
+      "path": "C:\\WINDOWS\\System32\\wsl.exe",
+      "args": [
+        "-d",
+        "Ubuntu"
+      ]
+    }
+  },
+  "security.workspace.trust.untrustedFiles": "open",
+  "terminal.integrated.profiles.linux": {
+    "bash": {
+      "path": "bash",
+      "icon": "terminal-bash"
+    },
+    "zsh": {
+      "path": "zsh"
+    },
+    "fish": {
+      "path": "fish"
+    },
+    "tmux": {
+      "path": "tmux",
+      "icon": "terminal-tmux"
+    },
+    "pwsh": {
+      "path": "pwsh",
+      "icon": "terminal-powershell"
+    },
+    "zsh (2)": {
+      "path": "/usr/bin/zsh"
+    }
+  },
+  "terminal.integrated.defaultProfile.linux": "zsh (2)",
+  "gopls": {
+    "ui.semanticTokens": true
+  },
+  "terminal.integrated.letterSpacing": 1,
+  "terminal.integrated.inheritEnv": false,
+  "git.autofetch": true,
+  "settingsSync.ignoredExtensions": [
+    "zaczero.bootstrap-v4-snippets"
+  ],
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit",
+    "source.addMissingImports": "explicit",
+    "source.organizeImports": "never"
+  },
+  "symbols.hidesExplorerArrows": false,
+  "chatgpt.lang": "en",
+  "editor.largeFileOptimizations": false,
+  "tabnine.experimentalAutoImports": true,
+  "window.commandCenter": false,
+  "dotnetAcquisitionExtension.sharedExistingDotnetPath": "C:\\Program Files\\dotnet\\dotnet.exe",
+  "workbench.iconTheme": "symbols",
+  "vscodeGoogleTranslate.preferredLanguage": "English",
+  "go.toolsManagement.autoUpdate": true,
+  "redhat.telemetry.enabled": true,
+  "security.allowedUNCHosts": [
+    "abas"
+  ],
+  "workbench.tree.renderIndentGuides": "none",
+  "database-client.autoSync": true,
+  "[html]": {
+    "editor.defaultFormatter": "vscode.html-language-features"
+  },
+  "rest-client.environmentVariablesFile": "${workspaceFolder}/.env",
+  "workbench.sideBar.location": "right",
+  "mssql.enableRichExperiences": true,
+  "window.menuBarVisibility": "compact",
+  "workbench.colorTheme": "Omni",
+  "dotnet.formatting.organizeImportsOnFormat": true,
+  "mssql.connectionGroups": [
+    {
+      "name": "ROOT",
+      "id": "8EC178C5-2E75-4C72-9FA6-3CBC2E1A2354"
+    }
+  ],
+  "mssql.connections": [],
+  "vsicons.presets.foldersAllDefaultIcon": true,
+  "helium-icon-theme.folders.associations": {
+    "infra": "app",
+    "entities": "tools",
+    "use-cases": "controller",
+    "dtos": "test",
+    "repositories": "database",
+    "http": "api",
+    "mappers": "database",
+    "factories": "app",
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "vscode.typescript-language-features"
+  },
+  "workbench.editor.empty.hint": "hidden"
+}
