@@ -4,3 +4,9 @@
 ```bash
 bash <(curl -s https://raw.githubusercontent.com/natan-carvalho/natan-carvalho/refs/heads/main/scripts/nvim-with-lazyvim.sh)
 ```
+
+
+### Setup WSL
+```bash
+bash <(https://raw.githubusercontent.com/natan-carvalho/natan-carvalho/refs/heads/main/scripts/setup_wsl.sh)
+```
