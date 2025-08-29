@@ -41,5 +41,5 @@ echo copiando configurações
 git clone https://github.com/natan-carvalho/natan-carvalho ~/
 
 cp ~/natan-carvalho/files/.zshrc ~/
-
+rm -rf ~/natan-carvalho
 source ~/.zshrc
