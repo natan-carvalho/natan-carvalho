@@ -25,10 +25,13 @@ sudo usermod -aG docker $USER
 
 echo Instalando os plugins
 echo zsh-autocomplete
-git clone --depth 1 -- https://github.com/marlonrichert/zsh-autocomplete.git ~/
+git clone --depth 1 -- https://github.com/marlonrichert/zsh-autocomplete.git 
 
 echo zsh-syntax-highlighting
 git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
+
+echo zsh-autosuggestions
+git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
 
 echo asdf
 git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.14.0
