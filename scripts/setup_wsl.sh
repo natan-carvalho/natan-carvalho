@@ -34,7 +34,7 @@ echo asdf
 git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.14.0
 
 echo copiando configurações
-git clone https://github.com/natan-carvalho/natan-carvalho ~/
+git clone https://github.com/natan-carvalho/natan-carvalho ~/natan-carvalho
 
 cp ~/natan-carvalho/files/.zshrc ~/
 rm -rf ~/natan-carvalho
