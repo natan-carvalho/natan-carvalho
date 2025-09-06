@@ -1,7 +1,7 @@
 echo Inicializando a configuração do seu sistema.
 cd ~/
 echo Configurando o Docker com docker-compose
-sudo apt get install zsh -y
+sudo apt-get install zsh -y
 sudo apt-get update
 sudo apt-get install ca-certificates curl docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin zsh -y
 sudo install -m 0755 -d /etc/apt/keyrings
