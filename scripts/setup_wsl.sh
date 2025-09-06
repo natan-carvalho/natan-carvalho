@@ -23,6 +23,9 @@ echo \
 
 sudo usermod -aG docker $USER
 
+echo Instalar o ZSH
+sudo apt install zsh -y
+
 echo Instalando os plugins
 echo zsh-autocomplete
 git clone --depth 1 -- https://github.com/marlonrichert/zsh-autocomplete.git 
@@ -43,6 +46,5 @@ cp ~/natan-carvalho/files/.zshrc ~/
 rm -rf ~/natan-carvalho
 source ~/.zshrc
 
-echo Instalar o ZSH e Oh-My-ZSH
-sudo apt install zsh -y
+echo Instalar Oh-My-ZSH
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
