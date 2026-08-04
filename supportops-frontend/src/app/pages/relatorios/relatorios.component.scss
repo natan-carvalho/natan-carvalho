@@ -1,0 +1,39 @@
+.reports-shell {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.period-card,
+.report-card {
+  padding: 1.2rem;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+}
+
+.period-tabs {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 1rem;
+}
+
+.metrics-grid div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.9rem;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.label {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.85rem;
+}

@@ -1,0 +1,38 @@
+.sidebar {
+  width: 260px;
+  min-height: 100%;
+  background: linear-gradient(180deg, #0f172a 0%, #111827 100%);
+  color: #e5eefc;
+  padding: 1rem 0.65rem;
+  transition: width 0.2s ease;
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.sidebar.collapsed {
+  width: 76px;
+}
+
+.brand-block {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.5rem 0.6rem 1.1rem;
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+mat-nav-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+mat-nav-list a {
+  border-radius: 12px;
+  color: rgba(255, 255, 255, 0.86);
+}
+
+.active-link {
+  background: rgba(79, 140, 255, 0.24);
+  color: #fff !important;
+}

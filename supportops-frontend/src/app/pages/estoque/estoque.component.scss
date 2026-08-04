@@ -1,0 +1,69 @@
+.inventory-shell {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.summary-card,
+.form-card,
+.table-card {
+  padding: 1.2rem;
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 1rem;
+}
+
+.summary-grid div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.8rem;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.label {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.85rem;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.inventory-table {
+  width: 100%;
+}
+
+.status-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.82rem;
+}
+
+.status-available {
+  background: rgba(46, 199, 166, 0.16);
+  color: #6ee7c2;
+}
+
+.status-in-use {
+  background: rgba(255, 184, 77, 0.16);
+  color: #ffd08f;
+}
+
+.status-maintenance {
+  background: rgba(255, 93, 122, 0.16);
+  color: #ff9aad;
+}

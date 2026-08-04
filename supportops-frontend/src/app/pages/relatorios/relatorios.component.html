@@ -1,0 +1,36 @@
+<section class="reports-shell">
+  <app-page-title
+    title="Relatórios"
+    subtitle="Acompanhe indicadores por período"
+  ></app-page-title>
+
+  <mat-card class="period-card">
+    <div class="period-tabs">
+      <button mat-stroked-button [color]="selectedPeriod() === 'Diário' ? 'primary' : ''" (click)="selectPeriod('Diário')">Diário</button>
+      <button mat-stroked-button [color]="selectedPeriod() === 'Mensal' ? 'primary' : ''" (click)="selectPeriod('Mensal')">Mensal</button>
+      <button mat-stroked-button [color]="selectedPeriod() === 'Anual' ? 'primary' : ''" (click)="selectPeriod('Anual')">Anual</button>
+    </div>
+  </mat-card>
+
+  <mat-card class="report-card" *ngIf="currentReport() as report">
+    <h3>{{ report.period }} — overview</h3>
+    <div class="metrics-grid">
+      <div>
+        <span class="label">Incidentes</span>
+        <strong>{{ report.incidents }}</strong>
+      </div>
+      <div>
+        <span class="label">Resolvidos</span>
+        <strong>{{ report.resolved }}</strong>
+      </div>
+      <div>
+        <span class="label">Uptime</span>
+        <strong>{{ report.uptime }}</strong>
+      </div>
+      <div>
+        <span class="label">Produtividade</span>
+        <strong>{{ report.productivity }}</strong>
+      </div>
+    </div>
+  </mat-card>
+</section>

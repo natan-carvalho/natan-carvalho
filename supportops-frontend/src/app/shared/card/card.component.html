@@ -1,0 +1,10 @@
+<mat-card class="metric-card">
+  <div class="metric-icon" [style.background-color]="color + '22'" [style.color]="color">
+    <mat-icon>{{ icon }}</mat-icon>
+  </div>
+  <div class="metric-body">
+    <h3>{{ title }}</h3>
+    <p class="value">{{ value }}</p>
+    <span class="trend">{{ trend }}</span>
+  </div>
+</mat-card>

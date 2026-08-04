@@ -1,0 +1,25 @@
+<section class="dashboard-shell">
+  <app-page-title
+    title="Dashboard"
+    subtitle="Visão geral operacional da equipe SupportOps"
+  ></app-page-title>
+
+  <div class="welcome-card">
+    <div>
+      <h2>Olá, {{ user().name }}</h2>
+      <p>{{ user().role }} · {{ summary() }} métricas monitoradas</p>
+    </div>
+    <button mat-flat-button color="primary">Atualizar painel</button>
+  </div>
+
+  <div class="cards-grid">
+    <app-card
+      *ngFor="let card of cards()"
+      [title]="card.title"
+      [value]="card.value"
+      [icon]="card.icon"
+      [trend]="card.trend"
+      [color]="card.color"
+    ></app-card>
+  </div>
+</section>

@@ -1,0 +1,41 @@
+.metric-card {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem;
+  background: rgba(15, 23, 42, 0.8);
+  color: #f8fbff;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.metric-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+}
+
+.metric-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.metric-body h3 {
+  margin: 0;
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.74);
+}
+
+.value {
+  margin: 0;
+  font-size: 1.45rem;
+  font-weight: 700;
+}
+
+.trend {
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.6);
+}

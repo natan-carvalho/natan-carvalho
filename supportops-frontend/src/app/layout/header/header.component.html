@@ -1,0 +1,25 @@
+<mat-toolbar color="primary" class="app-header">
+  <button mat-icon-button type="button" (click)="toggleSidebar.emit()" aria-label="Recolher menu">
+    <mat-icon>menu</mat-icon>
+  </button>
+
+  <a class="brand" routerLink="/dashboard">
+    <mat-icon>support_agent</mat-icon>
+    <span>SupportOps</span>
+  </a>
+
+  <span class="spacer"></span>
+
+  <div class="user-meta" *ngIf="!collapsed">
+    <div>
+      <div class="user-name">{{ userName }}</div>
+      <div class="user-role">{{ userRole }}</div>
+    </div>
+    <div class="avatar">{{ userName.slice(0, 2).toUpperCase() }}</div>
+  </div>
+
+  <button mat-stroked-button color="accent" class="logout-btn" (click)="logout.emit()" routerLink="/login">
+    <mat-icon>logout</mat-icon>
+    <span>Sair</span>
+  </button>
+</mat-toolbar>
