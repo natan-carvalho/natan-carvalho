@@ -27,7 +27,7 @@ ASDF_DIR="${HOME}/.asdf"
 CONFIG_DIR="${HOME}/.config"
 STARSHIP_CONFIG="${CONFIG_DIR}/starship"
 
-echo "===> [1/7] Instalando dependências..."
+echo "===> [1/8] Instalando dependências..."
 sudo apt-get update -y
 sudo apt-get install -y \
   zsh \
@@ -53,7 +53,7 @@ sudo apt-get install -y \
   gpg \
   software-properties-common
 
-echo "===> [2/7] Instalando Oh My Zsh..."
+echo "===> [2/8] Instalando Oh My Zsh..."
 
 if [[ ! -d "${HOME}/.oh-my-zsh" ]]; then
   RUNZSH=no CHSH=no KEEP_ZSHRC=yes \
@@ -66,7 +66,7 @@ fi
 
 mkdir -p "${ZSH_CUSTOM}/plugins"
 
-echo "===> [3/7] Instalando plugins do Oh My Zsh..."
+echo "===> [3/8] Instalando plugins do Oh My Zsh..."
 
 install_plugin() {
   local repo="$1"
@@ -95,7 +95,7 @@ install_plugin \
   https://github.com/zsh-users/zsh-syntax-highlighting.git \
   zsh-syntax-highlighting
 
-echo "===> [4/7] Instalando asdf..."
+echo "===> [4/8] Instalando asdf..."
 
 # Instalação pelo repositório oficial.
 # Ajuste a versão conforme a versão estável desejada.
@@ -113,7 +113,7 @@ else
   echo "asdf já existe em ${ASDF_DIR}."
 fi
 
-echo "==> [5/7] Instalando Starship..."
+echo "==> [5/8] Instalando Starship..."
 
 if ! command -v starship >/dev/null 2>&1; then
   curl -fsSL https://starship.rs/install.sh -o /tmp/starship-install.sh
@@ -123,7 +123,7 @@ else
   echo "Starship já instalado."
 fi
 
-echo "==> [6/7] Configurando Starship..."
+echo "==> [6/8] Configurando Starship..."
 
 mkdir -p "${CONFIG_DIR}"
 
@@ -207,7 +207,133 @@ disabled = true
 disabled = true
 STARSHIP
 
-echo "==> [7/7] Configurando .zshrc..."
+echo "==> [7/8] Instalando fontes Nerd Font..."
+echo "==> Instalando CaskaydiaCove Nerd Font no Windows..."
+if [[ -n "${WSL_DISTRO_NAME:-}" ]] &&
+   command -v powershell.exe >/dev/null 2>&1; then
+
+    powershell.exe -NoProfile -Command '
+        $ErrorActionPreference = "Stop"
+
+        $font = "CaskaydiaCove Nerd Font"
+        $fontKey = "HKCU:\Software\Microsoft\Windows NT\CurrentVersion\Fonts"
+
+        $installed = Get-ItemProperty -Path $fontKey -ErrorAction SilentlyContinue
+        $alreadyInstalled = $installed -and (
+            $installed.PSObject.Properties.Name |
+            Where-Object { $_ -like "*CaskaydiaCove Nerd Font*" }
+        )
+
+        if ($alreadyInstalled) {
+            Write-Host "CaskaydiaCove Nerd Font já instalada."
+            exit 0
+        }
+
+        $tempDir = Join-Path $env:TEMP "CaskaydiaCoveNerdFont"
+        $zipFile = Join-Path $tempDir "CascadiaCode.zip"
+        $extractDir = Join-Path $tempDir "extracted"
+        $fontDir = Join-Path $env:LOCALAPPDATA "Microsoft\Windows\Fonts"
+
+        New-Item -ItemType Directory -Force -Path $tempDir | Out-Null
+        New-Item -ItemType Directory -Force -Path $extractDir | Out-Null
+        New-Item -ItemType Directory -Force -Path $fontDir | Out-Null
+
+        try {
+            Invoke-WebRequest `
+                -Uri "https://github.com/ryanoasis/nerd-fonts/releases/latest/download/CascadiaCode.zip" `
+                -OutFile $zipFile
+
+            Expand-Archive -Path $zipFile -DestinationPath $extractDir -Force
+
+            $fonts = Get-ChildItem -Path $extractDir -Filter "*.ttf" -Recurse |
+                Where-Object { $_.Name -like "*CaskaydiaCove*" }
+
+            if (-not $fonts) {
+                throw "Nenhum arquivo TTF CaskaydiaCove encontrado no pacote."
+            }
+
+            foreach ($file in $fonts) {
+                $destination = Join-Path $fontDir $file.Name
+                Copy-Item -Path $file.FullName -Destination $destination -Force
+
+                $registryName = [System.IO.Path]::GetFileNameWithoutExtension($file.Name)
+                $displayName = "$registryName (TrueType)"
+
+                New-ItemProperty `
+                    -Path $fontKey `
+                    -Name $displayName `
+                    -Value $destination `
+                    -PropertyType String `
+                    -Force | Out-Null
+            }
+
+            Write-Host "Fonte instalada para o usuário atual do Windows."
+        }
+        finally {
+            Remove-Item -Path $tempDir -Recurse -Force -ErrorAction SilentlyContinue
+        }
+    '
+
+    echo "Confira a mensagem do PowerShell acima."
+else
+    echo "Não foi possível acessar o PowerShell do Windows."
+    echo "Instale a fonte manualmente: https://www.nerdfonts.com/font-downloads"
+fi
+
+echo "==> Verificando CaskaydiaCove Nerd Font no Ubuntu..."
+
+FONT_DIR="${HOME}/.local/share/fonts"
+FONT_CACHE_DIR="${FONT_DIR}/CaskaydiaCove"
+FONT_TEMP_DIR="$(mktemp -d)"
+
+cleanup_font_temp() {
+    rm -rf "${FONT_TEMP_DIR}"
+}
+trap cleanup_font_temp EXIT
+
+# Garante que o fontconfig esteja disponível.
+if ! command -v fc-list >/dev/null 2>&1; then
+    sudo apt-get update
+    sudo apt-get install -y fontconfig
+fi
+
+# Verifica se a fonte já está disponível no Ubuntu.
+if fc-list 2>/dev/null | grep -qi "CaskaydiaCove Nerd Font"; then
+    echo "CaskaydiaCove Nerd Font já instalada no Ubuntu."
+else
+    echo "Fonte não encontrada no Ubuntu. Instalando..."
+
+    mkdir -p "${FONT_DIR}" "${FONT_CACHE_DIR}"
+
+    curl -fL \
+        "https://github.com/ryanoasis/nerd-fonts/releases/latest/download/CascadiaCode.zip" \
+        -o "${FONT_TEMP_DIR}/CascadiaCode.zip"
+
+    unzip -q "${FONT_TEMP_DIR}/CascadiaCode.zip" \
+        -d "${FONT_TEMP_DIR}/extracted"
+
+    find "${FONT_TEMP_DIR}/extracted" \
+        -type f -iname '*CaskaydiaCove*.ttf' \
+        -exec cp -f {} "${FONT_CACHE_DIR}/" \;
+
+    if ! find "${FONT_CACHE_DIR}" -type f -iname '*.ttf' \
+        -print -quit | grep -q .; then
+        echo "ERRO: nenhum arquivo TTF CaskaydiaCove foi encontrado."
+        exit 1
+    fi
+
+    fc-cache -f "${FONT_CACHE_DIR}"
+
+    if fc-list 2>/dev/null | grep -qi "CaskaydiaCove Nerd Font"; then
+        echo "Fonte instalada com sucesso no Ubuntu."
+    else
+        echo "Aviso: os arquivos foram copiados, mas o fontconfig não confirmou a fonte."
+    fi
+fi
+
+echo "==> Verificação da fonte concluída."
+
+echo "==> [8/8] Configurando .zshrc..."
 
 ZSHRC="${HOME}/.zshrc"
 
