@@ -100,18 +100,49 @@ echo "===> [4/8] Instalando asdf..."
 # Instalação pelo repositório oficial.
 # Ajuste a versão conforme a versão estável desejada.
 ASDF_VERSION="v0.20.2"
+ASDF_BIN_DIR="${HOME}/.local/bin"
+ASDF_DATA_DIR="${HOME}/.asdf"
 
-if [[ ! -d "${ASDF_DIR}/.git" ]]; then
-  if [[ -e "${ASDF_DIR}" ]]; then
-    echo "O caminho ${ASDF_DIR} já existe e não é um clone Git."
-    echo "Preservando o conteúdo. Verifique a instalação manualmente."
-  else
-    git clone https://github.com/asdf-vm/asdf.git \
-      "${ASDF_DIR}" --branch "${ASDF_VERSION}" --depth 1
-  fi
-else
-  echo "asdf já existe em ${ASDF_DIR}."
+mkdir -p "${ASDF_BIN_DIR}" "${ASDF_DATA_DIR}"
+
+# Detecta arquitetura
+case "$(uname -m)" in
+  x86_64)
+    ASDF_ARCH="amd64"
+    ;;
+  aarch64|arm64)
+    ASDF_ARCH="arm64"
+    ;;
+  *)
+    echo "Arquitetura não suportada: $(uname -m)"
+    exit 1
+    ;;
+esac
+
+ASDF_TEMP="$(mktemp -d)"
+
+trap 'rm -rf "${ASDF_TEMP}"' EXIT
+
+ASDF_URL="https://github.com/asdf-vm/asdf/releases/download/${ASDF_VERSION}/asdf-${ASDF_VERSION}-linux-${ASDF_ARCH}.tar.gz"
+
+echo "Baixando asdf ${ASDF_VERSION} (${ASDF_ARCH})..."
+
+curl -fL "${ASDF_URL}" -o "${ASDF_TEMP}/asdf.tar.gz"
+tar -xzf "${ASDF_TEMP}/asdf.tar.gz" -C "${ASDF_TEMP}"
+ASDF_EXECUTABLE="$(find "${ASDF_TEMP}" -type f -name asdf -perm /111 -print -quit)"
+
+if [[ -z "${ASDF_EXECUTABLE}" ]]; then
+  echo "Erro: não foi possível localizar o executável asdf no pacote."
+  exit 1
 fi
+
+install -m 755 "${ASDF_EXECUTABLE}" "${ASDF_BIN_DIR}/asdf"
+export ASDF_DATA_DIR
+export PATH="${ASDF_BIN_DIR}:${ASDF_DATA_DIR}/shims:${PATH}"
+echo "asdf instalado:"
+"${ASDF_BIN_DIR}/asdf" --version
+
+mkdir -p "${ASDF_DATA_DIR}/plugins" "${ASDF_DATA_DIR}/shims"
 
 echo "==> [5/8] Instalando Starship..."
 
@@ -212,72 +243,72 @@ echo "==> Instalando CaskaydiaCove Nerd Font no Windows..."
 if [[ -n "${WSL_DISTRO_NAME:-}" ]] &&
    command -v powershell.exe >/dev/null 2>&1; then
 
-    powershell.exe -NoProfile -Command '
-        $ErrorActionPreference = "Stop"
+  powershell.exe -NoProfile -Command '
+    $ErrorActionPreference = "Stop"
 
-        $font = "CaskaydiaCove Nerd Font"
-        $fontKey = "HKCU:\Software\Microsoft\Windows NT\CurrentVersion\Fonts"
+    $font = "CaskaydiaCove Nerd Font"
+    $fontKey = "HKCU:\Software\Microsoft\Windows NT\CurrentVersion\Fonts"
 
-        $installed = Get-ItemProperty -Path $fontKey -ErrorAction SilentlyContinue
-        $alreadyInstalled = $installed -and (
-            $installed.PSObject.Properties.Name |
-            Where-Object { $_ -like "*CaskaydiaCove Nerd Font*" }
-        )
+    $installed = Get-ItemProperty -Path $fontKey -ErrorAction SilentlyContinue
+    $alreadyInstalled = $installed -and (
+      $installed.PSObject.Properties.Name |
+      Where-Object { $_ -like "*CaskaydiaCove Nerd Font*" }
+    )
 
-        if ($alreadyInstalled) {
-            Write-Host "CaskaydiaCove Nerd Font já instalada."
-            exit 0
+    if ($alreadyInstalled) {
+      Write-Host "CaskaydiaCove Nerd Font já instalada."
+      exit 0
+    }
+
+    $tempDir = Join-Path $env:TEMP "CaskaydiaCoveNerdFont"
+    $zipFile = Join-Path $tempDir "CascadiaCode.zip"
+    $extractDir = Join-Path $tempDir "extracted"
+    $fontDir = Join-Path $env:LOCALAPPDATA "Microsoft\Windows\Fonts"
+
+    New-Item -ItemType Directory -Force -Path $tempDir | Out-Null
+    New-Item -ItemType Directory -Force -Path $extractDir | Out-Null
+    New-Item -ItemType Directory -Force -Path $fontDir | Out-Null
+
+    try {
+      Invoke-WebRequest `
+        -Uri "https://github.com/ryanoasis/nerd-fonts/releases/latest/download/CascadiaCode.zip" `
+        -OutFile $zipFile
+
+      Expand-Archive -Path $zipFile -DestinationPath $extractDir -Force
+
+      $fonts = Get-ChildItem -Path $extractDir -Filter "*.ttf" -Recurse |
+        Where-Object { $_.Name -like "*CaskaydiaCove*" }
+
+      if (-not $fonts) {
+        throw "Nenhum arquivo TTF CaskaydiaCove encontrado no pacote."
+      }
+
+      foreach ($file in $fonts) {
+        $destination = Join-Path $fontDir $file.Name
+        Copy-Item -Path $file.FullName -Destination $destination -Force
+
+        $registryName = [System.IO.Path]::GetFileNameWithoutExtension($file.Name)
+        $displayName = "$registryName (TrueType)"
+
+        New-ItemProperty `
+          -Path $fontKey `
+          -Name $displayName `
+          -Value $destination `
+          -PropertyType String `
+          -Force | Out-Null
         }
 
-        $tempDir = Join-Path $env:TEMP "CaskaydiaCoveNerdFont"
-        $zipFile = Join-Path $tempDir "CascadiaCode.zip"
-        $extractDir = Join-Path $tempDir "extracted"
-        $fontDir = Join-Path $env:LOCALAPPDATA "Microsoft\Windows\Fonts"
-
-        New-Item -ItemType Directory -Force -Path $tempDir | Out-Null
-        New-Item -ItemType Directory -Force -Path $extractDir | Out-Null
-        New-Item -ItemType Directory -Force -Path $fontDir | Out-Null
-
-        try {
-            Invoke-WebRequest `
-                -Uri "https://github.com/ryanoasis/nerd-fonts/releases/latest/download/CascadiaCode.zip" `
-                -OutFile $zipFile
-
-            Expand-Archive -Path $zipFile -DestinationPath $extractDir -Force
-
-            $fonts = Get-ChildItem -Path $extractDir -Filter "*.ttf" -Recurse |
-                Where-Object { $_.Name -like "*CaskaydiaCove*" }
-
-            if (-not $fonts) {
-                throw "Nenhum arquivo TTF CaskaydiaCove encontrado no pacote."
-            }
-
-            foreach ($file in $fonts) {
-                $destination = Join-Path $fontDir $file.Name
-                Copy-Item -Path $file.FullName -Destination $destination -Force
-
-                $registryName = [System.IO.Path]::GetFileNameWithoutExtension($file.Name)
-                $displayName = "$registryName (TrueType)"
-
-                New-ItemProperty `
-                    -Path $fontKey `
-                    -Name $displayName `
-                    -Value $destination `
-                    -PropertyType String `
-                    -Force | Out-Null
-            }
-
-            Write-Host "Fonte instalada para o usuário atual do Windows."
-        }
-        finally {
-            Remove-Item -Path $tempDir -Recurse -Force -ErrorAction SilentlyContinue
-        }
-    '
+      Write-Host "Fonte instalada para o usuário atual do Windows."
+    }
+    finally {
+      Remove-Item -Path $tempDir -Recurse -Force -ErrorAction SilentlyContinue
+    }
+  '
 
     echo "Confira a mensagem do PowerShell acima."
 else
-    echo "Não foi possível acessar o PowerShell do Windows."
-    echo "Instale a fonte manualmente: https://www.nerdfonts.com/font-downloads"
+  echo "Não foi possível acessar o PowerShell do Windows."
+  echo "Instale a fonte manualmente: https://www.nerdfonts.com/font-downloads"
 fi
 
 echo "==> Verificando CaskaydiaCove Nerd Font no Ubuntu..."
@@ -287,48 +318,48 @@ FONT_CACHE_DIR="${FONT_DIR}/CaskaydiaCove"
 FONT_TEMP_DIR="$(mktemp -d)"
 
 cleanup_font_temp() {
-    rm -rf "${FONT_TEMP_DIR}"
+  rm -rf "${FONT_TEMP_DIR}"
 }
 trap cleanup_font_temp EXIT
 
 # Garante que o fontconfig esteja disponível.
 if ! command -v fc-list >/dev/null 2>&1; then
-    sudo apt-get update
-    sudo apt-get install -y fontconfig
+  sudo apt-get update
+  sudo apt-get install -y fontconfig
 fi
 
 # Verifica se a fonte já está disponível no Ubuntu.
 if fc-list 2>/dev/null | grep -qi "CaskaydiaCove Nerd Font"; then
-    echo "CaskaydiaCove Nerd Font já instalada no Ubuntu."
+  echo "CaskaydiaCove Nerd Font já instalada no Ubuntu."
 else
-    echo "Fonte não encontrada no Ubuntu. Instalando..."
+  echo "Fonte não encontrada no Ubuntu. Instalando..."
 
-    mkdir -p "${FONT_DIR}" "${FONT_CACHE_DIR}"
+  mkdir -p "${FONT_DIR}" "${FONT_CACHE_DIR}"
 
-    curl -fL \
-        "https://github.com/ryanoasis/nerd-fonts/releases/latest/download/CascadiaCode.zip" \
-        -o "${FONT_TEMP_DIR}/CascadiaCode.zip"
+  curl -fL \
+    "https://github.com/ryanoasis/nerd-fonts/releases/latest/download/CascadiaCode.zip" \
+    -o "${FONT_TEMP_DIR}/CascadiaCode.zip"
 
-    unzip -q "${FONT_TEMP_DIR}/CascadiaCode.zip" \
-        -d "${FONT_TEMP_DIR}/extracted"
+  unzip -q "${FONT_TEMP_DIR}/CascadiaCode.zip" \
+    -d "${FONT_TEMP_DIR}/extracted"
 
-    find "${FONT_TEMP_DIR}/extracted" \
-        -type f -iname '*CaskaydiaCove*.ttf' \
-        -exec cp -f {} "${FONT_CACHE_DIR}/" \;
+  find "${FONT_TEMP_DIR}/extracted" \
+    -type f -iname '*CaskaydiaCove*.ttf' \
+    -exec cp -f {} "${FONT_CACHE_DIR}/" \;
 
-    if ! find "${FONT_CACHE_DIR}" -type f -iname '*.ttf' \
-        -print -quit | grep -q .; then
-        echo "ERRO: nenhum arquivo TTF CaskaydiaCove foi encontrado."
-        exit 1
-    fi
+  if ! find "${FONT_CACHE_DIR}" -type f -iname '*.ttf' \
+    -print -quit | grep -q .; then
+    echo "ERRO: nenhum arquivo TTF CaskaydiaCove foi encontrado."
+    exit 1
+  fi
 
-    fc-cache -f "${FONT_CACHE_DIR}"
+  fc-cache -f "${FONT_CACHE_DIR}"
 
-    if fc-list 2>/dev/null | grep -qi "CaskaydiaCove Nerd Font"; then
-        echo "Fonte instalada com sucesso no Ubuntu."
-    else
-        echo "Aviso: os arquivos foram copiados, mas o fontconfig não confirmou a fonte."
-    fi
+  if fc-list 2>/dev/null | grep -qi "CaskaydiaCove Nerd Font"; then
+    echo "Fonte instalada com sucesso no Ubuntu."
+  else
+    echo "Aviso: os arquivos foram copiados, mas o fontconfig não confirmou a fonte."
+  fi
 fi
 
 echo "==> Verificação da fonte concluída."
@@ -338,7 +369,7 @@ echo "==> [8/8] Configurando .zshrc..."
 ZSHRC="${HOME}/.zshrc"
 
 if [[ ! -f "${ZSHRC}" ]]; then
-    touch "${ZSHRC}"
+  touch "${ZSHRC}"
 fi
 
 # Backup antes de modificar a configuração.
@@ -357,26 +388,26 @@ start = "# >>> WSL CUSTOM SETUP >>>"
 end = "# <<< WSL CUSTOM SETUP <<<"
 
 if start in text and end in text:
-    before, rest = text.split(start, 1)
-    _, after = rest.split(end, 1)
-    text = before.rstrip() + "\n\n" + after.lstrip()
+  before, rest = text.split(start, 1)
+  _, after = rest.split(end, 1)
+  text = before.rstrip() + "\n\n" + after.lstrip()
 
 path.write_text(text)
 PY
 
 # Desativa o tema do Oh My Zsh para que Starship controle o prompt.
 if grep -q '^ZSH_THEME=' "${ZSHRC}"; then
-    sed -i 's/^ZSH_THEME=.*/ZSH_THEME=""/' "${ZSHRC}"
+  sed -i 's/^ZSH_THEME=.*/ZSH_THEME=""/' "${ZSHRC}"
 fi
 
 # Atualiza a lista de plugins do Oh My Zsh.
 if grep -q '^plugins=' "${ZSHRC}"; then
-    sed -i \
-        's/^plugins=.*/plugins=(git asdf zsh-autosuggestions zsh-completions zsh-syntax-highlighting)/' \
-        "${ZSHRC}"
+  sed -i \
+    's/^plugins=.*/plugins=(git zsh-autosuggestions zsh-completions zsh-syntax-highlighting)/' \
+    "${ZSHRC}"
 else
-    echo 'plugins=(git asdf zsh-autosuggestions zsh-completions zsh-syntax-highlighting)' \
-        >> "${ZSHRC}"
+  echo 'plugins=(git zsh-autosuggestions zsh-completions zsh-syntax-highlighting)' \
+    >> "${ZSHRC}"
 fi
 
 cat >> "${ZSHRC}" <<'ZSHCONFIG'
@@ -385,21 +416,23 @@ cat >> "${ZSHRC}" <<'ZSHCONFIG'
 
 # Carrega o Oh My Zsh.
 export ZSH="$HOME/.oh-my-zsh"
+
 if [[ -s "$ZSH/oh-my-zsh.sh" ]]; then
-    source "$ZSH/oh-my-zsh.sh"
+  source "$ZSH/oh-my-zsh.sh"
 fi
 
 # Caminhos do asdf (instalação oficial via Git).
-export PATH="$HOME/.asdf/bin:$HOME/.asdf/shims:$PATH"
+export ASDF_DATA_DIR="$HOME/.asdf"
+export PATH="$HOME/.local/bin:$HOME/.asdf/bin:$HOME/.asdf/shims:$PATH"
 
 # Autocompletar adicional do Zsh.
 if [[ -d "$ZSH_CUSTOM/plugins/zsh-completions/src" ]]; then
-    fpath=("$ZSH_CUSTOM/plugins/zsh-completions/src" $fpath)
+  fpath=("$ZSH_CUSTOM/plugins/zsh-completions/src" $fpath)
 fi
 
 # Starship como prompt principal.
 if command -v starship >/dev/null 2>&1; then
-    eval "$(starship init zsh)"
+  eval "$(starship init zsh)"
 fi
 
 # <<< WSL CUSTOM SETUP <<<
@@ -410,14 +443,14 @@ echo "==> Configurando o Zsh como shell padrão..."
 ZSH_PATH="$(command -v zsh)"
 
 if ! grep -qxF "${ZSH_PATH}" /etc/shells; then
-    echo "O caminho ${ZSH_PATH} não consta em /etc/shells."
-    echo "Solicitando inclusão para permitir chsh..."
-    echo "${ZSH_PATH}" | sudo tee -a /etc/shells >/dev/null
+  echo "O caminho ${ZSH_PATH} não consta em /etc/shells."
+  echo "Solicitando inclusão para permitir chsh..."
+  echo "${ZSH_PATH}" | sudo tee -a /etc/shells >/dev/null
 fi
 
 if [[ "${SHELL:-}" != "${ZSH_PATH}" ]]; then
-    chsh -s "${ZSH_PATH}" || \
-        echo "Não foi possível alterar o shell padrão automaticamente."
+  chsh -s "${ZSH_PATH}" || \
+    echo "Não foi possível alterar o shell padrão automaticamente."
 fi
 
 echo
