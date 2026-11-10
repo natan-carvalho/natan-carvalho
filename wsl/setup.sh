@@ -430,6 +430,46 @@ if [[ -d "$ZSH_CUSTOM/plugins/zsh-completions/src" ]]; then
   fpath=("$ZSH_CUSTOM/plugins/zsh-completions/src" $fpath)
 fi
 
+# ==========================
+# ALIASES
+# ==========================
+gacp() {
+  # Verifica se existe um repositório Git no diretório atual.
+  if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+    echo "Erro: não é um repositório Git."
+    return 1
+  fi
+
+  # Solicita a mensagem de commit do usuário.
+  if [[ -z "$1" ]]; then
+    echo -n "Mensagem do commit: "
+    read -r commit_message
+  else
+    commit_message="$*"
+  fi
+  if [[ -z "$commit_message" ]]; then
+    echo "Erro: mensagem de commit não fornecida."
+    return 1
+  fi
+
+  echo "\n==> Adicionando arquivos..."
+  git add . || return 1
+
+  echo "\n==> Criando commit..."
+  git commit -m "$commit_message" || return 1
+
+  # Verifica se existe um remotor configurado
+  if ! git remote get-url origin >/dev/null 2>&1; then
+    echo "Erro: não há um repositório remoto configurado."
+    return 1
+  fi
+
+  echo "\n==> Enviando para o repositório remoto..."
+  git push origin || return 1
+
+  echo "\n==> Commit e push concluídos com sucesso!"
+}
+
 # Starship como prompt principal.
 if command -v starship >/dev/null 2>&1; then
   eval "$(starship init zsh)"
